@@ -40,7 +40,6 @@ class Processor(Resource):
 				with open(file_path, "r") as f:
 					return_data += f.read()
 					return_data += "\n"
-		print(return_data)
 		with open ('report.txt', 'w') as f:
 			f.write(return_data)
 
