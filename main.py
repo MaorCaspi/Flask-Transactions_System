@@ -4,12 +4,14 @@ from flask_restful import Api, Resource, reqparse
 from datetime import date, timedelta
 from pathlib import Path
 
+DB_FOLDER_PATH = "daily transactions files"
+
 app = Flask(__name__)
 api = Api(app)
 
-if not os.path.exists("daily transactions files"):  
+if not os.path.exists(DB_FOLDER_PATH):  
     # If the 'daily transactions files' folder isn't exists - then create it
-    os.makedirs("daily transactions files")
+    os.makedirs(DB_FOLDER_PATH)
 
 processor_args = reqparse.RequestParser() # Validate body parames of any post req
 processor_args.add_argument("src_bank_account", type=str, help="src_bank_account is required", required=True)
@@ -28,11 +30,14 @@ def get_daily_transactions_file_path(num_of_minus_days):
 	Return the daily transactions file path of (today's date - 'num_of_minus_days')
 	:For example - daily transactions files\\30-01-2022.txt
 	'''
-	return Path("daily transactions files\\"+get_date(num_of_minus_days) + ".txt")
+	return Path(DB_FOLDER_PATH + "\\"+get_date(num_of_minus_days) + ".txt")
 
 class Processor(Resource):
-
 	def get(self):
+		'''
+		Perform a transaction.
+		:This call returns a transaction_id.
+		'''
 		return_data = ""
 		for i in range (4 ,-1, -1):
 			file_path = get_daily_transactions_file_path(i)
@@ -47,6 +52,12 @@ class Processor(Resource):
 
 	
 	def post(self):
+		'''
+		Downloads a daily report of transaction results.
+		:It may contain info about transactions from the last 5 days.
+		:The report format is:
+		:transaction_id, success/fail
+		'''
 		args = processor_args.parse_args()
 		print("New transaction from: " + args['src_bank_account'] + " to: " + args['dst_bank_account'] + " the amount is: " + str(args['amount']))
 		
