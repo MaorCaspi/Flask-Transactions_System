@@ -50,11 +50,14 @@ class Processor(Resource):
 		args = processor_args.parse_args()
 		print("New transaction from: " + args['src_bank_account'] + " to: " + args['dst_bank_account'] + " the amount is: " + str(args['amount']))
 		
-		rnd_num=random.randint(0,9) # Simulate success/fail transaction_status using random
-		if(rnd_num <= 7):
-			transaction_status="success"
-		else:
-			transaction_status="fail"
+		if args["direction"] == "debit":
+			rnd_num=random.randint(0,9) # Simulate success/fail transaction_status using random
+			if(rnd_num <= 7):
+				transaction_status = "success"
+			else:
+				transaction_status = "fail"
+		else: # Credit status is always successful
+			transaction_status = "success"
 
 		transaction_id = str(uuid.uuid4())
 
