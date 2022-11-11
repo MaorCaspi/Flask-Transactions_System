@@ -3,15 +3,13 @@ from flask import Flask, send_file
 from flask_restful import reqparse
 from datetime import date, timedelta
 from pathlib import Path
-
-DB_FOLDER_PATH = "daily transactions files"
-REPORT_FILE_PATH = "report.txt"
+from config import Config
 
 app = Flask(__name__)
 
-if not os.path.exists(DB_FOLDER_PATH):  
+if not os.path.exists(Config.DB_FOLDER_PATH):  
     # If the 'daily transactions files' folder isn't exists - then create it
-    os.makedirs(DB_FOLDER_PATH)
+    os.makedirs(Config.DB_FOLDER_PATH)
 
 def get_date(num_of_minus_days):
 	"""
@@ -24,7 +22,7 @@ def get_daily_transactions_file_path(num_of_minus_days):
 	Return the daily transactions file path of (today's date - 'num_of_minus_days')
 	For example - daily transactions files\\30-01-2022.txt
 	"""
-	return Path(DB_FOLDER_PATH + "\\"+get_date(num_of_minus_days) + ".txt")
+	return Path(Config.DB_FOLDER_PATH + "\\"+get_date(num_of_minus_days) + ".txt")
 
 
 @app.route('/', methods=['GET'])
@@ -42,10 +40,10 @@ def download_report():
 			with open(file_path, "r") as f:
 				return_data += f.read()
 				return_data += "\n"
-	with open (REPORT_FILE_PATH, 'w') as f:
+	with open (Config.REPORT_FILE_PATH, 'w') as f:
 		f.write(return_data)
 
-	return send_file(REPORT_FILE_PATH, as_attachment=True)
+	return send_file(Config.REPORT_FILE_PATH, as_attachment=True)
 
 @app.route('/', methods=['POST'])
 def perform_transaction():
@@ -84,4 +82,4 @@ def perform_transaction():
 	return(transaction_id, 200)
 
 if __name__ == "__main__":
-	app.run(debug = False, port = 5000)
+	app.run(debug = False, port = Config.FLASK_PORT_NUMBER)
